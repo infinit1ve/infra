@@ -10,7 +10,7 @@ keys:
   - &primary age19srrknrehu57y76vfsy067t5x7chjnk67xmw7h6jsesxupaj7gasxtv2t5
   - &mirax-nix age1254fh4urg28yvefw7w28mz0wndzw7afehvmvaqrfnfkwnzt5hagsa8ts6x
   - &nolax-nix age13xfg39rfvzk7e8e82q05uzntc3vkw9u77pgm2ps387kc7hh2xeesnsrcxu
-  - &sonax-nix age1w6zamywre4vkwpq8c56zr8rpxesuhyxwqavz3639q5sxyx40je3ss3lrgs
+  - &sonax-nix age1kj8fgz8yjzszxrucf3t2erwg2jvwzrfktuvrpu3fc9qwgcrnyptsmjztqv
 creation_rules:
   - path_regex: (secrets|helm\/values\/vaultwarden)\/secrets\.yaml$
     key_groups:

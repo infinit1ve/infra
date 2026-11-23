@@ -112,7 +112,6 @@
     user = "infinitive";
     brews = [
       "mas"
-      "helm"
     ];
     casks = [
       "anki"

@@ -30,6 +30,10 @@ in {
     btop
     fastfetch
     kubectl
+    kubernetes-helm
+    fortune
+    cowsay
+    lolcat
   ];
 
   home.file = {
