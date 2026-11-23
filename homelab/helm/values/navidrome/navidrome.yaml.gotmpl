@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/library/common/values.schema.json
+
+controllers:
+  main:
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: ghcr.io/navidrome/navidrome
+          tag: 0.64.2
+          digest: sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52
+        env:
+          PUID: 99
+          PGID: 100
+          UMASK: 002
+          TZ: Europe/Berlin
+          Plugins.Enabled: true
+          ND_PLUGINS_ENABLED: true
+          ND_ENABLEEXTERNALSERVICES: true
+          ND_COVERARTPRIORITY: embedded,folder,external
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: 4533
+              initialDelaySeconds: 10
+              periodSeconds: 10
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: 4533
+              initialDelaySeconds: 10
+              periodSeconds: 10
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+        targetPort: 4533
+
+ingress:
+  main:
+    hosts:
+      - host: music.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    globalMounts:
+      - path: /data
+  music:
+    type: nfs
+    server: 10.12.3.3
+    path: /mnt/user/media/music
+    globalMounts:
+      - path: /music
+        readOnly: true

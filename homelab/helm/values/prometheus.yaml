@@ -1,0 +1,13 @@
+server:
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 256Mi
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.{{ .Values.domain }}
+extraArgs:
+  - --storage.tsdb.retention.time=7d
+  - --storage.tsdb.wal-compression

@@ -1,0 +1,30 @@
+repositories:
+  - name: bedag
+    url: https://bedag.github.io/helm-charts/
+---
+environments:
+  default:
+    secrets:
+      - ../../../../secrets/secrets.yaml
+---
+releases:
+  - name: sonax-redirect
+    namespace: traefik
+    chart: bedag/raw
+    values:
+      - ./sonax.yaml.gotmpl
+  - name: nextcloud-redirect
+    namespace: traefik
+    chart: bedag/raw
+    values:
+      - ./nextcloud.yaml.gotmpl
+  - name: jellyfin-redirect
+    namespace: traefik
+    chart: bedag/raw
+    values:
+      - ./jellyfin.yaml.gotmpl
+  - name: immich-redirect
+    namespace: traefik
+    chart: bedag/raw
+    values:
+      - ./immich.yaml.gotmpl

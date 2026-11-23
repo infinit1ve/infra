@@ -1,0 +1,3 @@
+homelab/helm/values/vaultwarden/secrets.yaml
+secrets/secrets.yaml
+.DS_Store

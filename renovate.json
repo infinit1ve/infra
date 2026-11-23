@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "pinDigests": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update Docker images in bjw-s Helm values",
+      "managerFilePatterns": [
+        "/\\.gotmpl$/",
+        "/\\.ya?ml$/"
+      ],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "(?m)^[ \\t]*image:[ \\t]*\\r?\\n[ \\t]+repository:[ \\t]*[\"']?(?<depName>[^\"' \\t\\r\\n]+)[\"']?[ \\t]*\\r?\\n[ \\t]+tag:[ \\t]*[\"']?(?<currentValue>[^\"' \\t\\r\\n]+)[\"']?(?:[ \\t]*\\r?\\n[ \\t]+digest:[ \\t]*[\"']?(?<currentDigest>sha256:[a-fA-F0-9]{64})[\"']?)?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ]
+}

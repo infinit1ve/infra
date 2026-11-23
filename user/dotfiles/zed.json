@@ -1,0 +1,50 @@
+{
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Zed (Default)",
+    "dark": "Zed (Default)"
+  },
+  "show_edit_predictions": false,
+  "edit_predictions": {
+    "mode": "subtle"
+  },
+  "agent_servers": {
+    "codex-acp": {
+      "type": "registry"
+    }
+  },
+  "cli_default_open_behavior": "existing_window",
+  "soft_wrap": "editor_width",
+  "tab_size": 2,
+  "autosave": "on_window_change",
+  "proxy": "",
+  "calls": {
+    "mute_on_join": true
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "status_style": "icon",
+    "dock": "left"
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "theme": {
+    "mode": "dark",
+    "light": "Ayu Light",
+    "dark": "Ayu Dark"
+  },
+  "file_types": {
+    "YAML": ["yaml", "yml", "gotmpl", "yaml.gotmpl"]
+  }
+}

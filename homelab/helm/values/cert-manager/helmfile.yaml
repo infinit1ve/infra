@@ -1,0 +1,27 @@
+repositories:
+  - name: bedag
+    url: https://bedag.github.io/helm-charts/
+---
+environments:
+  default:
+    secrets:
+      - ../../../../secrets/secrets.yaml
+---
+releases:
+  - name: cert-manager
+    namespace: cert-manager
+    chart: oci://quay.io/jetstack/charts/cert-manager
+    version: v1.21.3
+    values:
+      - installCRDs: true
+      - ./cert-manager.yaml
+  - name: cert-manager-secret
+    namespace: cert-manager
+    chart: bedag/raw
+    values:
+      - ./cert-manager-secret.yaml.gotmpl
+  - name: traefik-certificate
+    namespace: kube-system
+    chart: bedag/raw
+    values:
+      - ./traefik-certificate.yaml.gotmpl

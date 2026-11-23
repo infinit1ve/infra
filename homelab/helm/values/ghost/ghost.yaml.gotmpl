@@ -1,0 +1,125 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/library/common/values.schema.json
+
+controllers:
+  main:
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: ghost
+          tag: 6.78.0
+          digest: sha256:985ef9f30fb897a29050a9ef956bff1737ff1f2cd955aa5b759b88251f9c8735
+        dependsOn: "db"
+        env:
+          database__client: mysql
+          database__connection__host: 127.0.0.1
+          database__connection__user: {{ .Values.services.k3s.ghost.db.user | quote }}
+          database__connection__password: {{ .Values.services.k3s.ghost.db.password | quote }}
+          database__connection__database: ghost
+          url: "https://blog.{{ .Values.domain }}/blog"
+          mail__transport: SMTP
+          mail__options__host: {{ .Values.services.email.host | quote }}
+          mail__options__port: {{ .Values.services.email.port | quote }}
+          mail__options__secure: true
+          mail__options__auth__user: {{ .Values.services.email.user | quote }}
+          mail__options__auth__pass: {{ .Values.services.email.password | quote }}
+          mail__from: "noreply@{{ .Values.services.email.domain }}"
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: blog/ghost/api/admin/site/
+                port: 2368
+                httpHeaders:
+                  - name: X-Forwarded-Proto
+                    value: https
+                  - name: Host
+                    value: blog.{{ .Values.domain }}
+              initialDelaySeconds: 15
+              periodSeconds: 5
+              failureThreshold: 30
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: blog/ghost/api/admin/site/
+                port: 2368
+                httpHeaders:
+                  - name: X-Forwarded-Proto
+                    value: https
+                  - name: Host
+                    value: blog.{{ .Values.domain }}
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: blog/ghost/api/admin/site/
+                port: 2368
+                httpHeaders:
+                  - name: X-Forwarded-Proto
+                    value: https
+                  - name: Host
+                    value: blog.{{ .Values.domain }}
+              periodSeconds: 5
+              failureThreshold: 3
+
+      db:
+        image:
+          repository: mysql
+          tag: 8.4
+        env:
+          MYSQL_ROOT_PASSWORD: {{ .Values.services.k3s.ghost.db.password | quote }}
+        probes:
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - mysqladmin
+                  - ping
+                  - -h
+                  - 127.0.0.1
+                  - -u
+                  - root
+                  - -p$(MYSQL_ROOT_PASSWORD)
+              initialDelaySeconds: 15
+              periodSeconds: 10
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+        targetPort: 2368
+
+ingress:
+  main:
+    hosts:
+      - host: blog.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /var/lib/ghost/content
+        subPath: content
+      - path: /var/lib/mysql
+        subPath: db

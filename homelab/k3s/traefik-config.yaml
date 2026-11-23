@@ -1,0 +1,16 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    service:
+      annotations:
+        kube-vip.io/loadbalancerIP: "10.12.3.200"
+      spec:
+        loadBalancerIP: "10.12.3.200"
+    tlsStore:
+      default:
+        defaultCertificate:
+          secretName: traefik-certificate-secret

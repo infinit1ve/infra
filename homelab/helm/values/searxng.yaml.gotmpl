@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/library/common/values.schema.json
+
+controllers:
+  main:
+    strategy: RollingUpdate
+    containers:
+      main:
+        image:
+          repository: ghcr.io/searxng/searxng
+          tag: 2026.11.2-cccbc9e15
+          digest: sha256:892ed5710603e38f9dc201e6a0b2f3f14dbdb8108edcadac30e55b165c979fb7
+    replicas: 3
+    type: deployment
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+        targetPort: 8080
+
+ingress:
+  main:
+    hosts:
+      - host: searxng.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http

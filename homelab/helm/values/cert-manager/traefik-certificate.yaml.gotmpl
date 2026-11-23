@@ -1,0 +1,13 @@
+resources:
+- apiVersion: cert-manager.io/v1
+  kind: Certificate
+  metadata:
+    name: traefik-ingressroute-certificate
+    namespace: kube-system
+  spec:
+    secretName: traefik-certificate-secret
+    issuerRef:
+      name: cloudflare-clusterissuer
+      kind: ClusterIssuer
+    dnsNames:
+      - "*.{{ .Values.domain }}"

@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/library/common/values.schema.json
+
+controllers:
+  main:
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: ghcr.io/pocket-id/pocket-id
+          tag: v2.19.2
+          digest: sha256:3ee23895d6a3adb5dd5de801a4fd31fc31b960e6dfbea9b5200e33cf477695eb
+        env:
+          APP_URL: "https://auth.{{ .Values.domain }}"
+          TRUST_PROXY: true
+          ENCRYPTION_KEY: {{ .Values.services.k3s.pocketid | quote }}
+          DB_CONNECTION_STRING:
+            valueFrom:
+              secretKeyRef:
+                name: pocketid-db-app
+                key: uri
+          FILE_BACKEND: database
+          UI_CONFIG_DISABLED: true
+          ALLOW_USER_SIGNUPS: withToken
+          ANALYTICS_DISABLED: true
+          SMTP_HOST: {{ .Values.services.email.host | quote }}
+          SMTP_PORT: {{ .Values.services.email.port | quote }}
+          SMTP_FROM: "auth@{{ .Values.services.email.domain }}"
+          SMTP_USER: {{ .Values.services.email.user | quote }}
+          SMTP_PASSWORD: {{ .Values.services.email.password | quote }}
+          SMTP_TLS: {{ .Values.services.email.tls | quote }}
+          EMAIL_VERIFICATION_ENABLED: true
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 10
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 5
+              exec:
+                command:
+                  - /app/pocket-id
+                  - healthcheck
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+              exec:
+                command:
+                  - /app/pocket-id
+                  - healthcheck
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+        targetPort: 1411
+
+ingress:
+  main:
+    hosts:
+      - host: auth.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
