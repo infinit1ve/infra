@@ -4,6 +4,18 @@
     "config:recommended"
   ],
   "pinDigests": true,
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "mysql",
+        "valkey",
+        "gotenberg",
+        "tika"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
