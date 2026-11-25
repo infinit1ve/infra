@@ -6,12 +6,7 @@
   "pinDigests": true,
   "packageRules": [
     {
-      "matchPackageNames": [
-        "mysql",
-        "valkey",
-        "gotenberg",
-        "tika"
-      ],
+      "matchPackageNames": [ "/(?:^|\\/)(?:vaultwarden|tika)$/" ],
       "matchUpdateTypes": ["major"],
       "enabled": false
     }
