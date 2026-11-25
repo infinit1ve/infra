@@ -27,6 +27,7 @@ in {
     sops
     age
     git
+    gitleaks
     btop
     fastfetch
     kubectl
