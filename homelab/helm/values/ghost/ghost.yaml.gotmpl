@@ -73,7 +73,7 @@ controllers:
       db:
         image:
           repository: mysql
-          tag: 8.4
+          tag: 26.10
         env:
           MYSQL_ROOT_PASSWORD: {{ .Values.services.k3s.ghost.db.password | quote }}
         probes:
