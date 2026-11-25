@@ -31,7 +31,7 @@ releases:
     installed: false
     namespace: prometheus
     chart: prometheus-community/prometheus
-    version: 29.47.2
+    version: 29.49.0
     values:
       - ./values/prometheus.yaml
   - name: my-descheduler
