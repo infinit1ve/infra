@@ -1,0 +1,136 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/library/common/values.schema.json
+
+controllers:
+  main:
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: ghcr.io/we-promise/sure
+          tag: 0.7.7-alpha.9
+          digest: sha256:6fcac5bd781ffcbeaa0dfd6cac6d9e3cf0fd75205ca968d14a3eaa33f4284b9a
+        env:
+          SECRET_KEY_BASE: {{ .Values.services.k3s.sure | quote }}
+          DB_HOST:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "host"
+          DB_PORT:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "port"
+          POSTGRES_DB:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "dbname"
+          POSTGRES_USER:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "username"
+          POSTGRES_PASSWORD:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "password"
+          SMTP_ADDRESS: {{ .Values.services.email.host | quote }}
+          SMTP_PORT: {{ .Values.services.email.port | quote }}
+          EMAIL_SENDER: "sure@{{ .Values.services.email.domain }}"
+          SMTP_USERNAME: {{ .Values.services.email.user | quote }}
+          SMTP_PASSWORD: {{ .Values.services.email.password | quote }}
+          SMTP_TLS_ENABLED: "true"
+          APP_DOMAIN: sure.{{ .Values.domain }}
+          REDIS_URL: redis://localhost:6379/1
+          SELF_HOSTED: "true"
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /up
+                port: 3000
+              initialDelaySeconds: 30
+              periodSeconds: 10
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /up
+                port: 3000
+              initialDelaySeconds: 15
+              periodSeconds: 10
+      worker:
+        image:
+          repository: ghcr.io/we-promise/sure
+          tag: 0.7.7-alpha.9
+          digest: sha256:6fcac5bd781ffcbeaa0dfd6cac6d9e3cf0fd75205ca968d14a3eaa33f4284b9a
+        command:
+          - "bundle"
+          - "exec"
+          - "sidekiq"
+        env:
+          SECRET_KEY_BASE: {{ .Values.services.k3s.sure | quote }}
+          DB_HOST:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "host"
+          DB_PORT:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "port"
+          POSTGRES_DB:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "dbname"
+          POSTGRES_USER:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "username"
+          POSTGRES_PASSWORD:
+            secretKeyRef:
+              name: "sure-db-app"
+              key: "password"
+          SMTP_ADDRESS: {{ .Values.services.email.host | quote }}
+          SMTP_PORT: {{ .Values.services.email.port | quote }}
+          EMAIL_SENDER: "sure@{{ .Values.services.email.domain }}"
+          SMTP_USERNAME: {{ .Values.services.email.user | quote }}
+          SMTP_PASSWORD: {{ .Values.services.email.password | quote }}
+          SMTP_TLS_ENABLED: "true"
+          APP_DOMAIN: sure.{{ .Values.domain }}
+          REDIS_URL: redis://localhost:6379/1
+          SELF_HOSTED: "true"
+      redis:
+        image:
+          repository: docker.io/valkey/valkey
+          tag: 9-alpine
+          digest: sha256:c8e2d17498838af5d91e12eb7c11220b3434a7b7131a333e3af52ad5e0b80882
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+        targetPort: 3000
+
+ingress:
+  main:
+    hosts:
+      - host: sure.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+
+persistence:
+  ephemeral:
+    type: emptyDir
+  persistent:
+    type: persistentVolumeClaim
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /rails/storage

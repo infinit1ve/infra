@@ -1,0 +1,15 @@
+resources:
+- apiVersion: postgresql.cnpg.io/v1
+  kind: Cluster
+  metadata:
+    name: forgejo-db
+  spec:
+    imageName: ghcr.io/cloudnative-pg/postgresql:14@sha256:5480d5d9bd03762c4c8f33ebdf92973d689968ade2588b9d51710c5527b30d0b
+    instances: 3
+    postgresql:
+      synchronous:
+        method: any
+        number: 1
+    storage:
+      size: 2Gi
+      storageClass: "local-path"

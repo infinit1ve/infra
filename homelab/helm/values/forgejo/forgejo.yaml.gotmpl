@@ -1,0 +1,78 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/library/common/values.schema.json
+
+controllers:
+  main:
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: codeberg.org/forgejo/forgejo
+          tag: 17.0.2
+          digest: sha256:879f4f10a98e3e167b32cde5f7ae3af0163d50bfacf567559a27a0e95a95670c
+        env:
+          FORGEJO__database__DB_TYPE: postgres
+          FORGEJO__database__HOST: forgejo-db-rw:5432
+          FORGEJO__database__NAME:
+            valueFrom:
+              secretKeyRef:
+                name: forgejo-db-app
+                key: dbname
+          FORGEJO__database__USER:
+            valueFrom:
+              secretKeyRef:
+                name: forgejo-db-app
+                key: username
+          FORGEJO__database__PASSWD:
+            valueFrom:
+              secretKeyRef:
+                name: forgejo-db-app
+                key: password
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 10
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 5
+              httpGet:
+                path: /api/healthz
+                port: 3000
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+              httpGet:
+                path: /api/healthz
+                port: 3000
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+        targetPort: 3000
+
+ingress:
+  main:
+    hosts:
+      - host: git.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+
+persistence:
+  config:
+    type: persistentVolumeClaim
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /data

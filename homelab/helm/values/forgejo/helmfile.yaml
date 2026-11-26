@@ -1,0 +1,24 @@
+repositories:
+  - name: bedag
+    url: https://bedag.github.io/helm-charts/
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
+---
+environments:
+  default:
+    secrets:
+      - ../../../../secrets/secrets.yaml
+---
+releases:
+  - name: forgejo
+    namespace: forgejo
+    chart: bjw-s/app-template
+    version: 5.3.0
+    values:
+      - ./forgejo.yaml.gotmpl
+  - name: forgejo-db
+    installed: true
+    namespace: forgejo
+    chart: bedag/raw
+    values:
+      - ./forgejo-db.yaml

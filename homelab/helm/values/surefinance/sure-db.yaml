@@ -1,0 +1,15 @@
+resources:
+- apiVersion: postgresql.cnpg.io/v1
+  kind: Cluster
+  metadata:
+    name: sure-db
+  spec:
+    imageName: ghcr.io/cloudnative-pg/postgresql:18@sha256:899d3ed526b659d77935dde0e6bf2d69dbbf17d3d8c6486ca8cfd04bd3c18533
+    instances: 3
+    postgresql:
+      synchronous:
+        method: any
+        number: 1
+    storage:
+      size: 5Gi
+      storageClass: "local-path"
