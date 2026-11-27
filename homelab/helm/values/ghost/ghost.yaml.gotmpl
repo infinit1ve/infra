@@ -16,7 +16,8 @@ controllers:
           database__connection__user: {{ .Values.services.k3s.ghost.db.user | quote }}
           database__connection__password: {{ .Values.services.k3s.ghost.db.password | quote }}
           database__connection__database: ghost
-          url: "https://blog.{{ .Values.domain }}/blog"
+          url: "https://infinitive.cc/blog"
+          admin__url: "https://blog.{{ .Values.domain }}/blog"
           mail__transport: SMTP
           mail__options__host: {{ .Values.services.email.host | quote }}
           mail__options__port: {{ .Values.services.email.port | quote }}
@@ -92,6 +93,20 @@ controllers:
                   - -p$(MYSQL_ROOT_PASSWORD)
               initialDelaySeconds: 15
               periodSeconds: 10
+
+      cloudflared:
+        image:
+          repository: cloudflare/cloudflared
+          tag: 2026.11.2
+          digest: sha256:55c7e3e8d89d5e8d20b75a82f3602cbf98e06db406e73e282073cfdc5a9a3af6
+        dependsOn: main
+        command: cloudflared
+        args:
+          - tunnel
+          - --no-autoupdate
+          - run
+          - --token
+          - "{{ .Values.services.k3s.ghost.cloudflared }}"
 
 service:
   main:
