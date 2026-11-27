@@ -9,13 +9,13 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchCurrentVersion": "!/^0\\./",
       "automerge": true
     },
     {
       "description": "Turn off major updates for sidecars and postgres",
       "matchPackageNames": [ "/(?:^|\\/)(?:valkey|tika|gotenberg|postgresql|mysql|redis)$/" ],
       "matchUpdateTypes": ["major"],
-      "matchIsBreaking": false,
       "enabled": false
     }
   ],
