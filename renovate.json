@@ -4,10 +4,16 @@
     "config:recommended"
   ],
   "pinDigests": true,
+  "abandonmentThreshold": "1 year",
+  "assignees": [ "contact@infinitive.cc" ],
   "packageRules": [
     {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
       "description": "Turn off major updates for sidecars and postgres",
-      "matchPackageNames": [ "(?:(?:^|\\/)(?:valkey|tika|gotenberg|postgresql)|(?:mysql))$" ],
+      "matchPackageNames": [ "/(?:^|\\/)(?:valkey|tika|gotenberg|postgresql|mysql|redis)$/" ],
       "matchUpdateTypes": ["major"],
       "matchIsBreaking": false,
       "enabled": false
@@ -36,7 +42,7 @@
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
-        "\\s+imageName:\\s(?<depName>[^\"' \\t\\r\\n:]+):(?<currentValue>[^\"' \\t\\r\\n:@]+)@(?<currentDigest>sha256:[a-fA-F0-9]{64}+)"
+        "\\s+imageName:\\s(?<depName>[^\"' \\t\\r\\n:]+):(?<currentValue>[^\"' \\t\\r\\n:@]+)@(?<currentDigest>sha256:[a-fA-F0-9]{64})"
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
