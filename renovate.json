@@ -6,8 +6,10 @@
   "pinDigests": true,
   "packageRules": [
     {
-      "matchPackageNames": [ "/(?:^|\\/)(?:vaultwarden|tika)$/" ],
+      "description": "Turn off major updates for sidecars and postgres",
+      "matchPackageNames": [ "/(?:(?:^|\\/)(?:valkey|tika|gotenberg|postgresql)|(?:mysql))$/" ],
       "matchUpdateTypes": ["major"],
+      "matchIsBreaking": false,
       "enabled": false
     }
   ],
@@ -22,6 +24,19 @@
       "matchStringsStrategy": "any",
       "matchStrings": [
         "(?m)^[ \\t]*image:[ \\t]*\\r?\\n[ \\t]+repository:[ \\t]*[\"']?(?<depName>[^\"' \\t\\r\\n]+)[\"']?[ \\t]*\\r?\\n[ \\t]+tag:[ \\t]*[\"']?(?<currentValue>[^\"' \\t\\r\\n]+)[\"']?(?:[ \\t]*\\r?\\n[ \\t]+digest:[ \\t]*[\"']?(?<currentDigest>sha256:[a-fA-F0-9]{64})[\"']?)?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Update cnpg images",
+      "managerFilePatterns": [
+        "/-db\\.ya?ml$/"
+      ],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "\\s+imageName:\\s(?<depName>[^\"' \\t\\r\\n:]+):(?<currentValue>[^\"' \\t\\r\\n:@]+)@(?<currentDigest>sha256:[a-fA-F0-9]{64}+)"
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
