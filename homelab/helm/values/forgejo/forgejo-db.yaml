@@ -4,7 +4,7 @@ resources:
   metadata:
     name: forgejo-db
   spec:
-    imageName: ghcr.io/cloudnative-pg/postgresql:14@sha256:5480d5d9bd03762c4c8f33ebdf92973d689968ade2588b9d51710c5527b30d0b
+    imageName: ghcr.io/cloudnative-pg/postgresql:18@sha256:899d3ed526b659d77935dde0e6bf2d69dbbf17d3d8c6486ca8cfd04bd3c18533
     instances: 3
     postgresql:
       synchronous:
