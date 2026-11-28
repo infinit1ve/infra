@@ -6,6 +6,7 @@
   "pinDigests": true,
   "abandonmentThreshold": "1 year",
   "assignees": [ "contact@infinitive.cc" ],
+  "ignoreTests": true,
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
